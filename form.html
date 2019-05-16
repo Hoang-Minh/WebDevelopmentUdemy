@@ -8,15 +8,27 @@
 </head>
 <body>
     <h1>Login</h1>
-    <form>
-        <label for="">Username: 
-            <input name="username" type="text" placeholder="username">
+    <form action="">
+        <label>Username:
+            <input type="text" placeholder="username" required>
         </label>
-        <label for="">Password:
-            <input name="password" type="password" placeholder="password">
+        <label>Password:
+            <input type="password" placeholder="password" required>
         </label>
-        
-        <input type="Submit">        
+        <label>Email:
+            <input type="email" placeholder="Email" required>
+        </label>
+        <input type="submit">
+    </form>
+
+    <form action="http:/wikipedia.com">
+        <label for="username">Username:</label>
+        <input type="text" placeholder="username" required>
+        <label for="password">Password:</label>
+        <input type="password" placeholder="password" required>
+        <label for="email">Email:</label>
+        <input type="email" placeholder="email" required>
+        <input type="submit">
     </form>
 </body>
 </html>
