@@ -1,0 +1,10 @@
+<h1>Result Page</h1>
+
+
+<% data.Search.forEach(function(movie){%>
+    <li>Title: <span> <%= movie.Title %></span> </li>
+    <li>Year: <span> <%= movie.Year %></span> </li>
+    <li>IMDB: <span> <%= movie.imdbID %></span> </li>
+    <li>Type: <span> <%= movie.Type %></span> </li>
+    <li><img src='<%= movie.Poster %>'></img> </li>
+<% })%>
