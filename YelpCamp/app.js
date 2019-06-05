@@ -2,55 +2,90 @@ var express = require("express"),
     app = express(),
     mongoose = require("mongoose"),
     bodyParser = require("body-parser");
-//mongoose.connect('mongodb://localhost:27017/cat_app', { useNewUrlParser: true });
+
 mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 var campgroundScheme = new mongoose.Schema({
     name: String,
-    image: String
+    image: String,
+    description: String
 });
 
+
+
 var Campground = mongoose.model("Campground", campgroundScheme);
-// Campground.create(
-//     {
-//         name: "Silent Hill", 
-//         image: "https://www.campsitephotos.com/photo/camp/11630/Lakeshore_East_002.jpg"
-//     },    
-//     function(err, campground)
-//     {
-//         if(err){
-//             console.log(err);
-//         } else {
-//             console.log("New campground is created");
-//             console.log(campground);
-//         }
-//     }
-// );
+
+Campground.create(
+    {
+        name: "Sunset Canyon",
+        image: "https://images.unsplash.com/photo-1558837655-96260255edaf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80",
+        description: "Fusce venenatis nunc molestie, vehicula risus vel, varius lectus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut venenatis varius erat, quis ornare lacus. Quisque at purus sit amet ex faucibus faucibus. Integer fringilla purus et odio tempus, non egestas nunc commodo. Curabitur eleifend consectetur turpis in scelerisque. Vivamus viverra feugiat laoreet. Vivamus ornare ultrices elementum. Nullam tincidunt vehicula ante eget mattis. Aenean a elit ac turpis sodales volutpat at dignissim enim. Nam sagittis pharetra mi, quis faucibus tellus placerat eu. Etiam volutpat sem lacus, sed porttitor mi gravida vitae."
+    }, 
+    function(err, campground)
+    {
+        if(err){
+            console.log(err);
+        } else {
+            console.log("new campground created");
+            console.log(campground);
+        }
+    });
 
 app.get("/", function(req, res){
     res.render("landing");
 });
 
-app.get("/campgrounds", function(req, res){
+// INDEX - show all campgrounds
+app.get("/campgrounds", function(req, res){    
     // get from db
     Campground.find({}, function(err, allCampgrounds){
         if(err){
             console.log(err);
         } else {
-            res.render("campgrounds", {campgrounds: allCampgrounds});
+            res.render("index", {campgrounds: allCampgrounds});
         }
     })
     
 });
 
+// CREATE - create new campground
+app.post("/campgrounds", function(req, res){
+    var name = req.body.name;
+    var image = req.body.image;
+    var desc = req.body.description;
+
+    var newCampground = {name: name, image: image, description: desc};
+    Campground.create(newCampground, function(err, newlyCreated){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(newlyCreated);
+            res.redirect("/campgrounds");
+        }
+    });
+
+});
+
+// NEW - show form to create new campground
 app.get("/campgrounds/new", function(req, res){
     res.render("newCampground");
-})
+});
+
+//SHOW - show more info about one campground
+app.get("/campgrounds/:id", function(req, res){
+    Campground.findById(req.params.id, function(err, foundCampground){
+        if(err){
+            console.log(err);
+        } else {
+            res.render("show", {campground: foundCampground});
+        }
+    });
+});
 
 var port = process.env.Port || 3000;
 
 app.listen(port, function(){
-    console.log("Server is listening");
+    console.log("Server is listening....");
 })
