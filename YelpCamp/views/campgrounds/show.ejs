@@ -1,0 +1,29 @@
+<% include ../partials/header %>
+
+<div class="container">    
+    <figure class="figure text-center">
+        <h1 class="text-info text-uppercase my-4"><%= campground.name%> - <%= campground.description%></h1>
+        <img src="<%= campground.image%>" class="figure-img img-fluid rounded w-50" alt="A generic square placeholder image with rounded corners in a figure.">
+    </figure>
+
+    <div class="astrodivider"><div class="astrodividermask"></div><span><i>&#10038;</i></span></div>
+    
+    <div class="text-center">
+        <blockquote class="blockquote">        
+        <div class="row justify-content-center">
+            <% campground.comments.forEach(function(comment){%>
+                <div class="col-4">
+                    <p class="mb-0 text-capitalize font-italic"><%= comment.text%></p>
+                    <footer class="blockquote-footer text-capitalize ml-3"><%= comment.author%></footer>
+                </div>
+            <%})%>
+        </div>
+    </blockquote>
+    <p class="mt-5"><a href="/campgrounds/new" class="btn btn-success btn-sm">Add New Comment</a></p>
+    </div>
+    
+</div>
+
+
+
+<% include ../partials/footer %>
