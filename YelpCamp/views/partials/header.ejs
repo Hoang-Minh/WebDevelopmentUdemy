@@ -27,23 +27,27 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                    </li>
                 </ul>
-
                 <ul class="navbar-nav">
+                <% if(!currentUser){%>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">SignUp</a>
+                        <a class="nav-link" href="/register">SignUp</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Login</a>
+                        <a class="nav-link" href="/login">Login</a>
                     </li>
+                <%} else {%>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Sign In As <span class="text-capitalize"><%=currentUser.username %></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                <%}%>
                 </ul>
             </div>
         </div>
 
     </nav>
+
+    <h1><%= message%></h1>

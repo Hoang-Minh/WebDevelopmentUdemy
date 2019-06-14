@@ -37,3 +37,11 @@
       font-style:normal;
        color:#049372;
   }
+
+  .delete-form{
+      display: inline;      
+  }
+
+  #edit a{
+      color: #fff;
+  }
