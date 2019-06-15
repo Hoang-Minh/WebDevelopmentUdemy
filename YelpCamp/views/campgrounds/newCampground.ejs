@@ -1,27 +1,32 @@
 <% include ../partials/header %>
 
-<div class="container">
-    <h1 class="text-center my-4">Create a new Campground</h1>
-
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form action="/campgrounds" method="POST">
-                <div class="form-group">
-                    <input class="form-control" type="text" name="name" placeholder="name">
-                </div>
-                <div class="form-group">
-                    <input class="form-control" type="text" name="image" placeholder="image">
-                </div>
-                <div class="form-group">
-                    <input class="form-control" type="text" name="description" placeholder="description">
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                </div>
-            </form>
-            <a href="/campgrounds">Go Back</a>
-        </div>
-    </div>    
+<div id="register" class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card card-body">
+                <h3 class="text-center mb-4">Create a new Campground</h3>
+                <form action="/campgrounds" method="POST">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control input-lg" placeholder="Name" name="name" type="text">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control input-lg" placeholder="Price" name="price" type="number" min="0.01" step="0.01">
+                        </div>         
+                        <div class="form-group">
+                            <input class="form-control input-lg" placeholder="Image" name="image" type="text">
+                        </div>           
+                        <div class="form-group">
+                            <input class="form-control input-lg" placeholder="Description" name="description" type="text">
+                        </div>                            
+                        <input class="btn btn-lg btn-primary btn-block" value="Add" type="submit">
+                    </fieldset>
+                </form>
+                <a class="btn btn-primary btn-lg mt-2" href="/campgrounds" role="button">Go Back</a>
+            </div>
+        </div>        
+    </div>
+    
 </div>
 
 <% include ../partials/footer %>
