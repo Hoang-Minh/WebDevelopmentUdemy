@@ -26,9 +26,10 @@ router.post("/", middleware.isLoggedIn, function(req, res){
     var newCampground = {name: name, image: image, description: desc, author: author};
     Campground.create(newCampground, function(err, newlyCreated){
         if(err){
+            req.flash("error", "A new campground cannot be created");
             console.log(err);
         } else {
-            console.log("newly created: " + newlyCreated);
+            req.flash("success", "A new campground has been created");
             res.redirect("/campgrounds");
         }
     });
@@ -54,6 +55,10 @@ router.get("/:id", function(req, res){
 //Edit Campground route
 router.get("/:id/edit", middleware.checkCampgroundOwnership, function(req, res){
     Campground.findById(req.params.id, function(err, foundCampground){
+        if(err || !foundCampground){
+            req.flash("error", "Cannot find campground");
+            console.log("Edit Campground error: " + err);
+        }        
         res.render("campgrounds/edit", {campground: foundCampground});
     });
         
@@ -63,9 +68,10 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, function(req, res){
 router.put("/:id", middleware.checkCampgroundOwnership, function(req, res){    
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
         if(err){
-            console.log(err);
+            req.flash("error", "Cannot find campground");
             res.redirect("/campgrounds");
         } else{
+            req.flash("success", "Campground has been updated");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });
@@ -74,11 +80,13 @@ router.put("/:id", middleware.checkCampgroundOwnership, function(req, res){
 //Delete campground
 router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res){
     Campground.findById(req.params.id, function(err, campground){
-        if(err){
-            console.log(err);
+        if(err || !campground){
+            console.log("Delete route: " + err);
+            req.flash("error", "Cannot find campground");            
             res.redirect("/campgrounds");
         } else {
             campground.remove();
+            req.flash("success", "Campground has been deleted");
             res.redirect("/campgrounds");
         }
     });
