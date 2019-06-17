@@ -48,3 +48,9 @@
   .alert, #register, #show-page, #new-campground{
       margin-top: 5rem;
   }
+
+  /* google map*/  
+  #map{
+      height: 400px;
+      width: 100%;
+  }

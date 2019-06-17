@@ -1,3 +1,4 @@
+require("dotenv").config();
 var express = require("express"),
   app = express(),
   mongoose = require("mongoose"),
@@ -50,8 +51,8 @@ app.use(indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds", campgroundRoutes);
 
-var port = process.env.Port || 3000;
+var port = process.env.PORT || 3000;
 
 app.listen(port, function() {
-  console.log("Server is listening....");
+  console.log("Server is listening at port " + port);
 });
