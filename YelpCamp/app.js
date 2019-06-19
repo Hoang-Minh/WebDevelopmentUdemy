@@ -10,6 +10,7 @@ var express = require("express"),
   commentRoutes = require("./routes/comments"),
   campgroundRoutes = require("./routes/campgrounds"),
   indexRoutes = require("./routes/index"),
+  userRoutes = require("./routes/users"),
   methodOverride = require("method-override"),
   flash = require("connect-flash");
 
@@ -51,6 +52,7 @@ app.use(function(req, res, next) {
 app.use(indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds", campgroundRoutes);
+app.use("/users", userRoutes);
 
 var port = process.env.PORT || 3000;
 
