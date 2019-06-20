@@ -33,7 +33,8 @@ router.post("/register", function(req, res) {
       req.flash("error", err.message);
       return res.render("register");
     }
-
+    // create an async array of function here ???
+    
     passport.authenticate("local")(req, res, function() {
       req.flash("success", "Welcome to Yelp Camp " + user.username);
       res.redirect("/campgrounds");
@@ -125,6 +126,14 @@ router.post("/forgot", function(req, res) {
         };
 
         transporter.sendMail(mailOptions, function(err) {
+          if (err) {
+            console.log(err);
+            req.flash(
+              "error",
+              "Error. An email cannot be sent to " + user.email
+            );
+            res.redirect("back");
+          }
           req.flash(
             "success",
             "An e-mail has been sent to " +
@@ -222,12 +231,25 @@ router.post("/reset/:token", function(req, res) {
         };
 
         transporter.sendMail(mailOptions, function(err) {
+          if (err) {
+            console.log(err);
+            req.flash(
+              "error",
+              "Error. An email cannot be sent to " + user.email
+            );
+            res.redirect("back");
+          }
           req.flash("success", "Success! Your password has been changed.");
           done(err);
         });
       }
     ],
     function(err) {
+      if (err) {
+        console.log(err);
+        req.flash("error", "Unknown error");
+        res.redirect("back");
+      }
       res.redirect("/campgrounds");
     }
   );
