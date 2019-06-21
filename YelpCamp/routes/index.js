@@ -5,6 +5,8 @@ var User = require("../models/user");
 var async = require("async");
 var nodemailer = require("nodemailer");
 var crypto = require("crypto");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 
 // root route
 router.get("/", function(req, res) {
@@ -95,14 +97,28 @@ router.post("/forgot", function(req, res) {
         });
       },
 
-      function(token, user, done) {
+      function(token, user, done) {        
+
+        const oauth2Client = new OAuth2(
+          process.env.CLIENT_ID,
+          process.env.CLIENT_SECRET,
+          "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+        
+        oauth2Client.setCredentials({
+          refresh_token: process.env.REFRESH_TOKEN
+        });
+
         var auth = {
           type: "oauth2",
           user: process.env.GMAIL,
           clientId: process.env.CLIENT_ID,
           clientSecret: process.env.CLIENT_SECRET,
           refreshToken: process.env.REFRESH_TOKEN,
-          accessToken: process.env.ACCESS_TOKEN
+          accessToken: async function(){
+            const tokens = await oauth2Client.refreshAccessToken();
+            return tokens.credentials.access_token;
+          }
         };
 
         var transporter = nodemailer.createTransport({
@@ -205,19 +221,27 @@ router.post("/reset/:token", function(req, res) {
       },
 
       function(user, done) {
+        const oauth2Client = new OAuth2(
+          process.env.CLIENT_ID,
+          process.env.CLIENT_SECRET,
+          "https://developers.google.com/oauthplayground" // Redirect URL
+        );
+        
+        oauth2Client.setCredentials({
+          refresh_token: process.env.REFRESH_TOKEN
+        });
+
         var auth = {
           type: "oauth2",
           user: process.env.GMAIL,
           clientId: process.env.CLIENT_ID,
           clientSecret: process.env.CLIENT_SECRET,
           refreshToken: process.env.REFRESH_TOKEN,
-          accessToken: process.env.ACCESS_TOKEN
+          accessToken: async function(){
+            const tokens = await oauth2Client.refreshAccessToken();
+            return tokens.credentials.access_token;
+          }
         };
-
-        var transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: auth
-        });
 
         var mailOptions = {
           to: user.email,
