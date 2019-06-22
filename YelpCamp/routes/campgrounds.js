@@ -3,6 +3,30 @@ var router = express.Router();
 var Campground = require("../models/campground");
 var middleware = require("../middleware");
 var NodeGeoCoder = require("node-geocoder");
+var multer = require("multer");
+var cloudinary = require("cloudinary").v2;
+
+var storage = multer.diskStorage({
+    filename: function(req, file, callback){
+        callback(null, Date.now() + file.originalname);
+    }
+});
+
+var imageFilter = function(req, file, cb){
+    //accept image files only
+    if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)){
+        return cb(new Error("Only image files are allowed!"), false);
+    }
+    cb(null, true);
+};
+
+var upload = multer({storage: storage, fileFilter: imageFilter});
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET_KEY
+});
 
 var options = {
     provider: "google",
@@ -44,38 +68,42 @@ router.get("/", function(req, res){
 });
 
 // CREATE - create new campground
-router.post("/", middleware.isLoggedIn, function(req, res){
-    var name = req.body.name;
-    var image = req.body.image;
-    var desc = req.body.description;
-    var price = req.body.price;
-
-    var author = {id: req.user._id, username: req.user.username};
-
-    geocoder.geocode(req.body.location, function(err, data){        
+router.post("/", middleware.isLoggedIn, upload.single("image"), function(req, res){
+    geocoder.geocode(req.body.campground.location, function(err, data){        
         if(err || !data.length){
             console.log(err);
             req.flash("error", "Invalid address");
             return res.redirect("back");
         }
 
-        var lat = data[0].latitude;
-        //console.log("lat: " +  lat);
-        var lng = data[0].longitude;
-        //console.log("long: " +  lng);
-        var location = data[0].formattedAddress;
-        //console.log(location);
-        var newCampground = {name: name, image: image, description: desc, price: price, author:author, location: location, lat: lat, lng: lng};
-
-        Campground.create(newCampground, function(err, newlyCreated){
+        cloudinary.uploader.upload(req.file.path, function(err, result){
             if(err){
-                req.flash("error", "A new campground cannot be created");
                 console.log(err);
-            } else {
-                req.flash("success", "A new campground has been created");
-                res.redirect("/campgrounds");
+                req.flash("error", "Upload error...");
+                return res.redirect("back");
             }
-        });
+            // add cloudinary url for the image to the campground object under image property            
+            req.body.campground.image = result.secure_url;
+            // add author to campground
+            req.body.campground.author = {
+                id: req.user._id,
+                username: req.user.username
+            }
+
+            req.body.lat = data[0].latitude;            
+            req.body.lng = data[0].longitude;            
+            req.body.location = data[0].formattedAddress;
+
+            Campground.create(req.body.campground, function(err, newlyCreated){
+                if(err){
+                    req.flash("error", "A new campground cannot be created");
+                    console.log(err);
+                } else {
+                    req.flash("success", "A new campground has been created");
+                    res.redirect("/campgrounds");
+                }
+            });
+        });        
     });
 });
 
